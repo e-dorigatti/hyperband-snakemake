@@ -13,7 +13,7 @@ class HbWriter:
         if template_dir is not None:
             loader = FileSystemLoader(template_dir)
         else:
-            loader = PackageLoader('hyperband_snakemake')
+            loader = PackageLoader('hyperband_snakemake', 'templates')
 
         self._env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
 

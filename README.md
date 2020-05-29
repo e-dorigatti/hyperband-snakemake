@@ -24,7 +24,14 @@ not risk losing all your work because of some random bug that would crash the
 training process.
 
 # Installation
-Create a conda environment (optional) and install the required packages:
+Can be installed via pip:
+
+```
+pip install git+https://github.com/e-dorigatti/hyperband-snakemake/
+```
+
+Or clone the repo, create a conda environment (optional) and install the
+required packages:
 
 ```
 > conda create --file packages.txt -c conda-forge -c bioconda -n hyperband-snakemake
