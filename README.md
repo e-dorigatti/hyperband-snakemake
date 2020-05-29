@@ -23,6 +23,9 @@ bootstrap that model). Importantly, by decoupling training and search, you do
 not risk losing all your work because of some random bug that would crash the
 training process.
 
+Note: to use this tool, you must adapt the included templates to your system.
+See section _Customization_ below for instructions.
+
 # Installation
 Can be installed via pip:
 
