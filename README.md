@@ -58,7 +58,7 @@ hours) to perform one epoch on the dataset. These parameters translate to the
 following search structure:
 
 ```
-> python generator.py 5 3 \
+> python -m hyperband_snakemake 5 3 \
     --repetitions 2 --folds 10 \
     --guaranteed-budget 3 \
     --cost-one-epoch-full-dataset 0.0028 \
