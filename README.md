@@ -27,7 +27,7 @@ training process.
 Can be installed via pip:
 
 ```
-pip install git+https://github.com/e-dorigatti/hyperband-snakemake/
+pip install hyperband-snakemake
 ```
 
 Or clone the repo, create a conda environment (optional) and install the
@@ -64,7 +64,7 @@ following search structure:
     --cost-one-epoch-full-dataset 0.0028 \
     --output-dir my-search \
     --random-seed 123456
-    
+
 Hyperband Search (cost: 426.23)
   Bracket 0 (cost: 73.48)
     Stage 0 - 243 configurations each with budget 1.0 (cost: 12.25)
@@ -150,7 +150,7 @@ Snakefile is designed to find the configuration with the minimum result):
 And log file:
 
 ```
-> cat my-search/bracket-2/stage-0/config-16/log.log 
+> cat my-search/bracket-2/stage-0/config-16/log.log
 INFO:root:Invoked with configuration file dev/sample-hb/bracket-2/stage-0/config-16/config
 INFO:root:Invoked with budget 9
 INFO:root:Loaded configuration: {'folds': 10, 'repetitions': 2, 'cv_seed': 109090, 'learning_rate': 0.001, 'C': 0.01, 'solver': 'saga', 'penalty': 'l1'}
@@ -192,7 +192,7 @@ three templates:
     and import it in the training script (if you are using Python, that is).
     This would save you the effort of writing code to read the configuration and
     instantiate the specified model.
- 
+
 These templates are rendered and saved in the output directory. This directory
 is now entirely portable, you just have to update `config['base_dir']` in the
 Snakefile. This variable should contain the path of the output dir, either
