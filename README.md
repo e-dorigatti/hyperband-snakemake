@@ -177,12 +177,11 @@ script uses [Jinja2][jinja] to render three templates:
 
  1. The [Snakefile][snake-tmpl], containing the logic to run the script and
     promote good configurations to the next stage.
- 2. The [bash launch script](hyperband_snakemake/templates/run.sh) that is
-    invoked by the Snakefile and runs the [sample training script][train-tmpl].
-    The training script should take as arguments the configuration file and the
-    budget, and write the result to a file named `result` in the same directory
-    as the configuration file (if you are maximizing a metric, write its
-    negation instead).
+ 2. The [bash launch script][run-tmpl] that is invoked by the Snakefile and runs
+    the [sample training script][train-tmpl]. The training script should take as
+    arguments the configuration file and the budget, and write the result to a
+    file named `result` in the same directory as the configuration file (if you
+    are maximizing a metric, write its negation instead).
  3. The [random configuration][confg-tmpl] that is read by the training script.
     Thanks to Jinja2, the actual generation of random parameters is contained in
     the template file itself. There can be some custom logic, e.g. in the
@@ -214,9 +213,8 @@ and run the search:
 
 # Running with Slurm
 Once you have customized the configuration template, it is quite easy to run a
-hyperband search on a cluster managed by
-[slurm][slurm], you just need to modify the
-run template to invoke `srun`, like so:
+hyperband search on a cluster managed by [slurm][slurm], you just need to modify
+the [launch script template][run-tmpl] to invoke `srun`, like so:
 
 ```
 srun --time 24:00:00 --gpus-per-task 1 --cpus-per-task 6 --mem 92G \
@@ -233,6 +231,11 @@ login node:
 nohup snakemake --snakefile my-search/Snakefile --latency-wait 60 -j 100 > my-search/log.out &
 ```
 
+Which will schedule up to 100 jobs at the same time. `latency-wait` tells
+Snakemake to wait for the result files for up to 60 seconds before failing the
+job. It may be necessary to account for possible latencies when the results
+saved in a networked file-system.
+
 
 # References
 [1]: Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. _Hyperband: A novel bandit-based approach to hyperparameter optimization._ The Journal of Machine Learning Research, 18(1), pp.6765-6816. http://www.jmlr.org/papers/volume18/16-558/16-558.pdf
@@ -240,6 +243,7 @@ nohup snakemake --snakefile my-search/Snakefile --latency-wait 60 -j 100 > my-se
 [2]: Köster, Johannes and Rahmann, Sven. _Snakemake - A scalable bioinformatics workflow engine_. Bioinformatics 2012. https://academic.oup.com/bioinformatics/article/28/19/2520/290322
 
  [jinja]: https://jinja.palletsprojects.com/en/2.11.x/
+ [run-tmpl]: hyperband_snakemake/templates/run.sh
  [snake-tmpl]: hyperband_snakemake/templates/Snakefile
  [train-tmpl]: hyperband_snakemake/example/train.py
  [config-tmpl]: hyperband_snakemake/templates/config
