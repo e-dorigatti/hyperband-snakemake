@@ -17,9 +17,12 @@ def promote_best(input, output, new_epochs):
               scores.append((fname, float(f.read())))
 
     scores.sort(key=lambda x: x[1])
-    print(scores)
+
+    print('Promoted configuration and their scores')
     for i in range(len(output)):
-        indir, _ = os.path.split(scores[i][0])
+        config, score = scores[i]
+        print('    %.4f - %s' % (score, config))
+        indir, _ = os.path.split(config)
         shutil.copy(os.path.join(indir, 'config'), output[i])
 
 
