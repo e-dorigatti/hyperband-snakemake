@@ -218,7 +218,8 @@ the [launch script template][run-tmpl] to invoke `srun`, like so:
 
 ```
 srun --time 24:00:00 --gpus-per-task 1 --cpus-per-task 6 --mem 92G \
-    <path-to-python> train.py \ "$1/config" --max-epochs "$2" --output-dir "$1"
+    --output "$1/slurm-%j.out" --error "$1/slurm-%j.err" \
+    <path-to-python> train.py "$1/config" --output-dir "$1" --max-epochs "$2" 
 ```
 
 Where `<path-to-python>` points to the python interpreter in a suitable virtual
