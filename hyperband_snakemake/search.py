@@ -39,7 +39,7 @@ class HbBracket:
 
 
 class HbSearch:
-    def __init__(self, smax, eta, unit_time, folds, repetitions, guaranteed_budget):
+    def __init__(self, smax, eta, unit_time, folds, repetitions, guaranteed_budget, allowed_brackets):
         R = eta**smax
         B = R * (smax + 1)
 
@@ -56,12 +56,15 @@ class HbSearch:
                 search=self,
             )
             for s in range(smax, -1, -1)
+            if not allowed_brackets or smax - s in allowed_brackets
         ]
 
     def cost(self):
         return sum(b.cost() for b in self.brackets)
 
     def pprint(self):
-        print(f'Hyperband Search (cost: {self.cost():.2f})')
+        print('Hyperband Search - η: {} S: {} R: {} B: {}  (cost: {:.2f})'.format(
+            self.eta, self.smax, self.R, self.B, self.cost()
+        ))
         for i, each in enumerate(self.brackets):
             each.pprint(i)

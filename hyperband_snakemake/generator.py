@@ -30,9 +30,11 @@ from hyperband_snakemake.writer import HbWriter
               help='Path to the launch template (relative to the template dir.)')
 @click.option('--snakefile-template', default='Snakefile',
               help='Path to the snakefile template (relative to the template dir.)')
+@click.option('--bracket', '-b', type=int, multiple=True,
+              help='Only perform this bracket (multiple allower).')
 def main(output_dir, smax, eta, cost_one_epoch_full_dataset, repetitions, folds,
          random_seed, guaranteed_budget, overwrite, template_dir, config_template,
-         run_template, snakefile_template):
+         run_template, snakefile_template, bracket):
     '''
     Uses the hyperband algorithm to generate a structured randomized hyper-parameter search.
     '''
@@ -46,8 +48,10 @@ def main(output_dir, smax, eta, cost_one_epoch_full_dataset, repetitions, folds,
 
     search = HbSearch(
         smax, eta, unit_time=unit_time, folds=folds,
-        repetitions=repetitions, guaranteed_budget=guaranteed_budget
+        repetitions=repetitions, guaranteed_budget=guaranteed_budget,
+        allowed_brackets=bracket
     )
+
     search.pprint()
 
     print()
