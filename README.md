@@ -10,7 +10,7 @@ different from the other implementations you can easily find elsewhere?
     stored on disk.
  2. All intermediate results are saved, too.
  3. Thanks to Snakemake, training can be offloaded to a cluster manager such as
-    Slurm, enabling effortless and _massive_ parallel training.
+    Slurm (see example below), enabling effortless and _massive_ parallel training.
  4. Even though this tool is written in Python, you can launch training scripts
     made with _any_ technology: they only need to read a configuration file and
     write a file with a numerical result.
@@ -173,27 +173,25 @@ reproducible.
 # Customization
 In its present state, the generator script creates by default the logistic
 regression example just explained, but adapting it to your needs is easy. This
-script uses [Jinja2](https://jinja.palletsprojects.com/en/2.11.x/) to render
-three templates:
+script uses [Jinja2][jinja] to render three templates:
 
- 1. The [Snakefile](hyperband_snakemake/templates/Snakefile), containing the
-    logic to run the script and promote good configurations to the next stage.
+ 1. The [Snakefile][snake-tmpl], containing the logic to run the script and
+    promote good configurations to the next stage.
  2. The [bash launch script](hyperband_snakemake/templates/run.sh) that is
-    invoked by the Snakefile and runs the [sample training
-    script](hyperband_snakemake/example/train.py). The training script should
-    take as arguments the configuration file and the budget, and write the
-    result to a file named `result` in the same directory as the configuration
-    file (if you are maximizing a metric, write its negation instead).
- 3. The [random configuration](hyperband_snakemake/templates/config) that is
-    read by the training script. Thanks to Jinja2, the actual generation of
-    random parameters is contained in the template file itself. There can be
-    some custom logic, e.g. in the provided example the type of regularization
-    (L1 or L2) is chosen based on the solver (SAGA or LBFGS). You are of course
-    not restricted to any particular type of configuration, as long as it is
-    text-based. For example, you can directly produce a [Python configuration
-    file](https://martin-thoma.com/configuration-files-in-python/#python-configuration-file)
-    and import it in the training script (if you are using Python, that is).
-    This would save you the effort of writing code to read the configuration and
+    invoked by the Snakefile and runs the [sample training script][train-tmpl].
+    The training script should take as arguments the configuration file and the
+    budget, and write the result to a file named `result` in the same directory
+    as the configuration file (if you are maximizing a metric, write its
+    negation instead).
+ 3. The [random configuration][confg-tmpl] that is read by the training script.
+    Thanks to Jinja2, the actual generation of random parameters is contained in
+    the template file itself. There can be some custom logic, e.g. in the
+    provided example the type of regularization (L1 or L2) is chosen based on
+    the solver (SAGA or LBFGS). You are of course not restricted to any
+    particular type of configuration, as long as it is text-based. For example,
+    you can directly produce a [Python configuration file][python-cfg] and
+    import it in the training script (if you are using Python, that is). This
+    would save you the effort of writing code to read the configuration and
     instantiate the specified model.
 
 These templates are rendered and saved in the output directory. This directory
@@ -214,8 +212,36 @@ and run the search:
 > snakemake ...
 ```
 
+# Running with Slurm
+Once you have customized the configuration template, it is quite easy to run a
+hyperband search on a cluster managed by
+[slurm][slurm], you just need to modify the
+run template to invoke `srun`, like so:
+
+```
+srun --time 24:00:00 --gpus-per-task 1 --cpus-per-task 6 --mem 92G \
+    <path-to-python> train.py \ "$1/config" --max-epochs "$2" --output-dir "$1"
+```
+
+Where `<path-to-python>` points to the python interpreter in a suitable virtual
+environment (but note that you are not restricted to use Python!).
+
+Then, use `nohup` (or tmux, or screen) to fire-and-forget Snakemake from the
+login node:
+
+```
+nohup snakemake --snakefile my-search/Snakefile --latency-wait 60 -j 100 > my-search/log.out &
+```
+
 
 # References
 [1]: Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. _Hyperband: A novel bandit-based approach to hyperparameter optimization._ The Journal of Machine Learning Research, 18(1), pp.6765-6816. http://www.jmlr.org/papers/volume18/16-558/16-558.pdf
 
 [2]: Köster, Johannes and Rahmann, Sven. _Snakemake - A scalable bioinformatics workflow engine_. Bioinformatics 2012. https://academic.oup.com/bioinformatics/article/28/19/2520/290322
+
+ [jinja]: https://jinja.palletsprojects.com/en/2.11.x/
+ [snake-tmpl]: hyperband_snakemake/templates/Snakefile
+ [train-tmpl]: hyperband_snakemake/example/train.py
+ [config-tmpl]: hyperband_snakemake/templates/config
+ [python-cfg]: https://martin-thoma.com/configuration-files-in-python/#python-configuration-file
+ [slurm]: https://slurm.schedmd.com/overview.html
