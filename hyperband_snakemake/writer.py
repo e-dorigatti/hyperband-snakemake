@@ -1,6 +1,6 @@
 import os
 
-from jinja2 import Environment, FileSystemLoader, PackageLoader
+from jinja2 import Environment, FileSystemLoader, PackageLoader, ChoiceLoader
 
 
 class HbWriter:
@@ -11,7 +11,10 @@ class HbWriter:
         self._snakefile_template = snakefile_template
 
         if template_dir is not None:
-            loader = FileSystemLoader(template_dir)
+            loader = ChoiceLoader([
+                FileSystemLoader(template_dir),
+                PackageLoader('hyperband_snakemake', 'templates'),
+            ])
         else:
             loader = PackageLoader('hyperband_snakemake', 'templates')
 
