@@ -182,7 +182,7 @@ script uses [Jinja2][jinja] to render three templates:
     arguments the configuration file and the budget, and write the result to a
     file named `result` in the same directory as the configuration file (if you
     are maximizing a metric, write its negation instead).
- 3. The [random configuration][confg-tmpl] that is read by the training script.
+ 3. The [random configuration][config-tmpl] that is read by the training script.
     Thanks to Jinja2, the actual generation of random parameters is contained in
     the template file itself. There can be some custom logic, e.g. in the
     provided example the type of regularization (L1 or L2) is chosen based on
