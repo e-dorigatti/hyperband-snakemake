@@ -225,6 +225,17 @@ srun --time 24:00:00 --gpus-per-task 1 --cpus-per-task 6 --mem 92G \
 Where `<path-to-python>` points to the python interpreter in a suitable virtual
 environment (but note that you are not restricted to use Python!).
 
+Another option is to use `sbatch` combined with `--wait`, which has the
+advantage that you can use a heredoc:
+
+```
+sbatch <options> --wait << EOF
+#!/bin/bash
+conda activate <env>
+python train.py "$1/config" --output-dir "$1" --max-epochs "$2" 
+EOF
+```
+
 Then, use `nohup` (or tmux, or screen) to fire-and-forget Snakemake from the
 login node:
 
