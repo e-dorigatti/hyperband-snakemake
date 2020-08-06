@@ -10,8 +10,7 @@ def bracket_status(idx, path):
                 stages_completed += 1
 
     current_stage_dir = os.path.join(path, f'stage-{stages_completed}')
-    config_status = []
-
+    config_status = {}
     results = []
     completed = running = pending = 0
     for dir_name in os.listdir(current_stage_dir):
@@ -35,7 +34,7 @@ def bracket_status(idx, path):
                 running += 1
                 status = 1
 
-            config_status.append(status)
+            config_status[conf_nr] = status
 
     print(f'Bracket {idx} - Stages completed: {stages_completed}')
     print(f'  Stage {stages_completed} - {len(config_status)} configurations')
@@ -43,9 +42,12 @@ def bracket_status(idx, path):
     print(f'    | {completed:>13d} | {running:>15d} | {pending:>11d} | {len(config_status):>5d} |')
     print()
     for i in range(0, len(config_status), 25):
-        print('     ', ' '.join(''.join((
-            ['.', '~', 'x'][c] for c in config_status[j:j+5])
-        ) for j in range(i, i + 25, 5)))
+        print('     ', ' '.join([
+            ''.join([
+                ['.', '~', 'x', '?'][config_status.get(k, -1)]
+                for k in range(j, min(j + 5, len(config_status)))
+            ]) for j in range(i, i + 25, 5)
+        ]))
 
     results.sort(key=lambda x: x[1])
     count = min(3, len(results))
