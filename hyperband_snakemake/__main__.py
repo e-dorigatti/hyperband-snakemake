@@ -1,2 +1,2 @@
-from hyperband_snakemake.generator import main
+from hyperband_snakemake.cli import main
 main()

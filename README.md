@@ -30,7 +30,7 @@ See section _Customization_ below for instructions.
 Can be installed via pip:
 
 ```
-pip install hyperband-snakemake
+pip install git+https://github.com/e-dorigatti/hyperband-snakemake
 ```
 
 Or clone the repo, create a conda environment (optional) and install the
@@ -61,7 +61,7 @@ hours) to perform one epoch on the dataset. These parameters translate to the
 following search structure:
 
 ```
-> python -m hyperband_snakemake 5 3 \
+> python -m hyperband_snakemake generate 5 3 \
     --repetitions 2 --folds 10 \
     --guaranteed-budget 3 \
     --cost-one-epoch-full-dataset 0.0028 \
@@ -170,6 +170,36 @@ INFO:root:Mean accuracy: 0.567
 Note that, since we used random seeds throughout, these results should be fully
 reproducible.
 
+# Visualizing search status
+Since a Hyperband search can take many days, a simple utility to see the ongoing
+progress is provided:
+
+```
+> python -m hyperband_snakemake status my-search
+Bracket 0 - Stages completed: 0
+  Stage 0 - 81 configurations
+    | Completed (x) | Running (~) | Pending (.) | Total |
+    |            12 |           8 |          61 |    81 |
+
+      ........x..xx....xx.....~
+      ..x....x.......x~~.xx...x
+      ..~~.......~...~....x....
+      ...~..
+
+  Top completed configuration(s):
+    1. 0.1508 - Conf. 68
+    2. 0.1590 - Conf. 50
+    3. 0.1624 - Conf. 56
+
+Bracket 1 - Stages completed: 0
+
+(output truncated)
+```
+
+This will simply scan the directory looking for configuration or result files
+indicating progress. A configuration is deemed "running" if its folder does not
+contain a result file, but contains files other than the configuration itself.
+
 # Customization
 In its present state, the generator script creates by default the logistic
 regression example just explained, but adapting it to your needs is easy. This
@@ -240,7 +270,7 @@ Then, use `nohup` (or tmux, or screen) to fire-and-forget Snakemake from the
 login node:
 
 ```
-nohup snakemake --snakefile my-search/Snakefile --latency-wait 60 -j 100 > my-search/log.out &
+> nohup snakemake --snakefile my-search/Snakefile --latency-wait 60 -j 100 > my-search/log.out &
 ```
 
 Which will schedule up to 100 jobs at the same time. `latency-wait` tells
