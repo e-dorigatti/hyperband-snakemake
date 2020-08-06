@@ -181,10 +181,10 @@ Bracket 0 - Stages completed: 0
     | Completed (x) | Running (~) | Pending (.) | Total |
     |            12 |           8 |          61 |    81 |
 
-      ........x..xx....xx.....~
-      ..x....x.......x~~.xx...x
-      ..~~.......~...~....x....
-      ...~..
+      ..... ...x. .xx.. ..xx. ....~
+      ..x.. ..x.. ..... x~~.x x...x
+      ..~~. ..... .~... ~.... x....
+      ...~. .   
 
   Top completed configuration(s):
     1. 0.1508 - Conf. 68

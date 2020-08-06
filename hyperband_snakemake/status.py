@@ -43,7 +43,9 @@ def bracket_status(idx, path):
     print(f'    | {completed:>13d} | {running:>11d} | {pending:>11d} | {len(config_status):>5d} |')
     print()
     for i in range(0, len(config_status), 25):
-        print('     ', ''.join(['.', '~', 'x'][c] for c in config_status[i:i+25]))
+        print('     ', ' '.join(''.join((
+            ['.', '~', 'x'][c] for c in config_status[j:j+5])
+        ) for j in range(i, i + 25, 5)))
 
     results.sort(key=lambda x: x[1])
     count = min(3, len(results))

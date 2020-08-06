@@ -9,9 +9,6 @@ from hyperband_snakemake.writer import HbWriter
 def run_generation(output_dir, smax, eta, cost_one_epoch_full_dataset, repetitions, folds,
                    random_seed, guaranteed_budget, overwrite, template_dir, config_template,
                    run_template, snakefile_template, bracket):
-    '''
-    Uses the hyperband algorithm to generate a structured randomized hyper-parameter search.
-    '''
     random.seed(random_seed)
 
     unit_time = 1.0
