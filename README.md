@@ -178,13 +178,13 @@ progress is provided:
 > python -m hyperband_snakemake status my-search
 Bracket 0 - Stages completed: 0
   Stage 0 - 81 configurations
-    | Completed (x) | Running (~) | Pending (.) | Total |
-    |            12 |           8 |          61 |    81 |
+    | Completed (x) | In progress (~) | Pending (.) | Total |
+    |            12 |               8 |          61 |    81 |
 
       ..... ...x. .xx.. ..xx. ....~
       ..x.. ..x.. ..... x~~.x x...x
       ..~~. ..... .~... ~.... x....
-      ...~. .   
+      ...~. .
 
   Top completed configuration(s):
     1. 0.1508 - Conf. 68
@@ -197,9 +197,11 @@ Bracket 1 - Stages completed: 0
 ```
 
 This will simply scan the directory looking for configuration or result files
-indicating progress. A configuration is deemed "running" if its folder does not
+indicating progress. A configuration is deemed "in progress" if its folder does not
 contain the result file, but contains files or folders other than the configuration
-itself, such as log files, TensorBoard's summary folders, etc.
+itself, such as log files, TensorBoard's summary folders, etc. Note that failed
+configurations are still marked as "in progress". You should check Snakemake's logs
+to determine if a configuration is running or failed.
 
 # Customization
 In its present state, the generator script creates by default the logistic
@@ -250,7 +252,7 @@ the [launch script template][run-tmpl] to invoke `srun`, like so:
 ```
 srun --time 24:00:00 --gpus-per-task 1 --cpus-per-task 6 --mem 92G \
     --output "$1/slurm-%j.out" --error "$1/slurm-%j.err" \
-    <path-to-python> train.py "$1/config" --output-dir "$1" --max-epochs "$2" 
+    <path-to-python> train.py "$1/config" --output-dir "$1" --max-epochs "$2"
 ```
 
 Where `<path-to-python>` points to the python interpreter in a suitable virtual
@@ -263,7 +265,7 @@ advantage that you can use a heredoc:
 sbatch <options> --wait << EOF
 #!/bin/bash
 conda activate <env>
-python train.py "$1/config" --output-dir "$1" --max-epochs "$2" 
+python train.py "$1/config" --output-dir "$1" --max-epochs "$2"
 EOF
 ```
 

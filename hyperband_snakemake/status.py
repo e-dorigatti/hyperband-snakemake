@@ -39,8 +39,8 @@ def bracket_status(idx, path):
 
     print(f'Bracket {idx} - Stages completed: {stages_completed}')
     print(f'  Stage {stages_completed} - {len(config_status)} configurations')
-    print(f'    | Completed (x) | Running (~) | Pending (.) | Total |')
-    print(f'    | {completed:>13d} | {running:>11d} | {pending:>11d} | {len(config_status):>5d} |')
+    print(f'    | Completed (x) | In progress (~) | Pending (.) | Total |')
+    print(f'    | {completed:>13d} | {running:>15d} | {pending:>11d} | {len(config_status):>5d} |')
     print()
     for i in range(0, len(config_status), 25):
         print('     ', ' '.join(''.join((
