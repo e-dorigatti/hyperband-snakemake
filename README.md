@@ -198,7 +198,8 @@ Bracket 1 - Stages completed: 0
 
 This will simply scan the directory looking for configuration or result files
 indicating progress. A configuration is deemed "running" if its folder does not
-contain a result file, but contains files other than the configuration itself.
+contain the result file, but contains files or folders other than the configuration
+itself, such as log files, TensorBoard's summary folders, etc.
 
 # Customization
 In its present state, the generator script creates by default the logistic
