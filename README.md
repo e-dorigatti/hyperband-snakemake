@@ -201,9 +201,9 @@ indicating progress. A configuration is deemed "in progress" if its folder does 
 contain the result file, but contains files or folders other than the configuration
 itself, such as log files, TensorBoard's summary folders, etc. A configuration is
 deemed "failed" if the result file contains `nan` or `inf`. Note that configurations
-that terminated abnormally, e.g. because of an unhandled exception, are still counted
-as "in progress". You should check Snakemake's logs to determine if a configuration
-is running or failed.
+that terminated abnormally without writing such a result file, e.g. because of an
+unhandled exception, are still counted as "in progress". You should check Snakemake's
+logs to determine whether a configuration is still running or has failed.
 
 # Customization
 In its present state, the generator script creates by default the logistic
