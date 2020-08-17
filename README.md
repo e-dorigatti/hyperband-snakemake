@@ -178,13 +178,13 @@ progress is provided:
 > python -m hyperband_snakemake status my-search
 Bracket 0 - Stages completed: 0
   Stage 0 - 81 configurations
-    | Completed (x) | In progress (~) | Pending (.) | Total |
-    |            12 |               8 |          61 |    81 |
+    | Completed (C) | Failed (F) | In progress (R) | Pending (.) | Total |
+    |            12 |        4   |               8 |          57 |    81 |
 
-      ..... ...x. .xx.. ..xx. ....~
-      ..x.. ..x.. ..... x~~.x x...x
-      ..~~. ..... .~... ~.... x....
-      ...~. .
+      ...F. ...C. .CC.. ..CC. ....R
+      ..C.. ..C.. ..... CRR.C C...C
+      ..RR. .F... .R... RF... CF...
+      ...R. .
 
   Top completed configuration(s):
     1. 0.1508 - Conf. 68
@@ -199,9 +199,11 @@ Bracket 1 - Stages completed: 0
 This will simply scan the directory looking for configuration or result files
 indicating progress. A configuration is deemed "in progress" if its folder does not
 contain the result file, but contains files or folders other than the configuration
-itself, such as log files, TensorBoard's summary folders, etc. Note that failed
-configurations are still marked as "in progress". You should check Snakemake's logs
-to determine if a configuration is running or failed.
+itself, such as log files, TensorBoard's summary folders, etc. A configuration is
+deemed "failed" if the result file contains `nan` or `inf`. Note that configurations
+that terminated abnormally, e.g. because of an unhandled exception, are still counted
+as "in progress". You should check Snakemake's logs to determine if a configuration
+is running or failed.
 
 # Customization
 In its present state, the generator script creates by default the logistic

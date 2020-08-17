@@ -1,4 +1,5 @@
 import os
+import math
 
 
 def bracket_status(idx, path):
@@ -12,7 +13,7 @@ def bracket_status(idx, path):
     current_stage_dir = os.path.join(path, f'stage-{stages_completed}')
     config_status = {}
     results = []
-    completed = running = pending = 0
+    completed = running = pending = failed = 0
     for dir_name in os.listdir(current_stage_dir):
         if dir_name.startswith('config-'):
             conf_dir = os.path.join(current_stage_dir, dir_name)
@@ -20,10 +21,15 @@ def bracket_status(idx, path):
             status = 0
             for i, fname in enumerate(os.listdir(conf_dir)):
                 if fname == 'result':
-                    status = 2
-                    completed += 1
                     with open(os.path.join(conf_dir, fname)) as f:
-                        results.append((conf_nr, float(f.read())))
+                        res = float(f.read())
+                        if math.isfinite(res):
+                            results.append((conf_nr, res))
+                            status = 2
+                            completed += 1
+                        else:
+                            status = 3
+                            failed += 1
                     break
 
             if i == 0:
@@ -38,13 +44,13 @@ def bracket_status(idx, path):
 
     print(f'Bracket {idx} - Stages completed: {stages_completed}')
     print(f'  Stage {stages_completed} - {len(config_status)} configurations')
-    print(f'    | Completed (x) | In progress (~) | Pending (.) | Total |')
-    print(f'    | {completed:>13d} | {running:>15d} | {pending:>11d} | {len(config_status):>5d} |')
+    print(f'    | Completed (C) | Failed (F) | In progress (R) | Pending (.) | Total |')
+    print(f'    | {completed:>13d} | {failed:>10d} | {running:>15d} | {pending:>11d} | {len(config_status):>5d} |')
     print()
     for i in range(0, len(config_status), 25):
         print('     ', ' '.join([
             ''.join([
-                ['.', '~', 'x', '?'][config_status.get(k, -1)]
+                ['.', 'R', 'C', 'F', '?'][config_status.get(k, -1)]
                 for k in range(j, min(j + 5, len(config_status)))
             ]) for j in range(i, i + 25, 5)
         ]))
