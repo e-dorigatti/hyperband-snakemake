@@ -3,14 +3,12 @@ import math
 
 
 def bracket_status(idx, path):
-    stages_completed = stages_count = 0
+    stages_count = 0
     for fname in os.listdir(path):
         if fname.startswith('stage-'):
             stages_count += 1
-            if os.path.exists(os.path.join(path, fname, 'config')):
-                stages_completed += 1
 
-    current_stage_dir = os.path.join(path, f'stage-{stages_completed}')
+    current_stage_dir = os.path.join(path, f'stage-{stages_count - 1}')
     config_status = {}
     results = []
     completed = running = pending = failed = 0
@@ -42,8 +40,8 @@ def bracket_status(idx, path):
 
             config_status[conf_nr] = status
 
-    print(f'Bracket {idx} - Stages completed: {stages_completed}')
-    print(f'  Stage {stages_completed} - {len(config_status)} configurations')
+    print(f'Bracket {idx} - Stages completed: {stages_count - 1}')
+    print(f'  Stage {stages_count} - {len(config_status)} configurations')
     print(f'    | Completed (C) | Failed (F) | In progress (R) | Pending (.) | Total |')
     print(f'    | {completed:>13d} | {failed:>10d} | {running:>15d} | {pending:>11d} | {len(config_status):>5d} |')
     print()
