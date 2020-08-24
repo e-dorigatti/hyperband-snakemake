@@ -106,8 +106,31 @@ seconds. One budget unit then equals 2x10x9=180 seconds, which translates to
 12). The wall-clock time can be of course reduced with parallel training.
 
 This generator will also create a folder hierarchy under `my-search`, splitting
-brackets, stages, and configurations. Each folder will contain one random
-configuration:
+brackets, stages, and configurations.
+
+```
+> tree my-search
+my-search
+├── bracket-0
+│   └── stage-0
+│       ├── config-0
+│       │   └── config
+│       ├── config-1
+│       │   └── config
+│       └── ...
+├── bracket-1
+│   └── stage-0
+│       ├── config-0
+│       │   └── config
+│       ├── config-1
+│       │   └── config
+│       └── ...
+├── ...
+├── run.sh
+└── Snakefile
+```
+
+Each folder will contain one random configuration:
 
 ```
 > cat my-search/bracket-2/stage-0/config-16/config
