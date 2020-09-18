@@ -24,17 +24,20 @@ def main(config_file, budget):
     logger.info('Invoked with configuration file %s', config_file)
     logger.info('Invoked with budget %d', budget)
 
+    # Read the provided YAML configuration
     with open(config_file) as f:
         config = yaml.safe_load(f)
     logger.info('Loaded configuration: %s', config)
 
+    # Run repeated, stratified cross-validation
     data = load_iris()
     accuracies = []
     for i in range(config['repetitions']):
         kfold = StratifiedKFold(config['folds'], shuffle=True,
-                                random_state=config['cv_seed'])
+                                random_state=config['cv_seed'] + i)
         splits = kfold.split(data['data'], data['target'])
         for j, (train_idx, test_idx) in enumerate(splits):
+            # Train the model with the provided hyper-parameters
             model = LogisticRegression(
                 max_iter=budget,
                 solver=config['solver'],
@@ -49,6 +52,7 @@ def main(config_file, budget):
     mean_acc = sum(accuracies) / len(accuracies)
     logger.info('Mean accuracy: %.3f', mean_acc)
 
+    # Write average accuracy to the output file
     with open(os.path.join(config_dir, 'result'), 'w') as f:
         f.write(f'{-mean_acc}\n')
 
