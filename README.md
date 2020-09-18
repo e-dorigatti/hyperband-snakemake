@@ -201,10 +201,8 @@ Bracket 0 - Stages completed: 0
     | Completed (C) | Failed (F) | In progress (R) | Pending (.) | Total |
     |            12 |        4   |               8 |          57 |    81 |
 
-      ...F. ...C. .CC.. ..CC. ....R
-      ..C.. ..C.. ..... CRR.C C...C
-      ..RR. .F... .R... RF... CF...
-      ...R. .
+     0  ...F. ...C. .CC.. ..CC. ....R    ..C.. ..C.. ..... CRR.C C...C
+    50  ..RR. .F... .R... RF... CF...    ...R. .
 
   Top completed configuration(s):
     1. 0.1508 - Conf. 68
