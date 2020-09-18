@@ -45,22 +45,24 @@ rule find_overall_best:
         promote_best(input, output, new_epochs=None)
 
 {% for bracket in brackets %}
+{% for stage in bracket.stages  %}
 # -----------------------------------------------------------------------------------------------------------
-# ---  Begin Bracket {{ bracket.id }}
+# ---  Begin Stage {{ stage.id }} of Bracket {{ bracket.id }}
 # -----------------------------------------------------------------------------------------------------------
 
-{% for stage in bracket.stages  %}
-# run all configurations in stage {{ stage.id }}
-rule run_bracket_{{ bracket.id }}_stage_{{ stage.id }}:
+{% for config in range(stage.configs) %}
+rule run_bracket_{{ bracket.id }}_stage_{{ stage.id }}_config_{{ config}}:
     input:
-         expand("{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{c}/config",
-                c=range({{ stage.configs }}), d=config['base_dir'])
+         expand("{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{ config }}/config",
+                d=config['base_dir'])
     output:
-         expand("{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{'{{'}}c{{'}}'}}/result",
+         expand("{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{ config }}/result",
                 d=config['base_dir'])
     shell:
-         expand("bash {d}/run.sh {d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{'{{'}}wildcards.c{{'}}'}} {b}",
+         expand("bash {d}/run.sh '{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{ config }}' {b}",
                 d=config['base_dir'], b={{ stage.budget }})[0]
+
+{% endfor %}
 
 {% if stage.promote_count > 0 %}
 # promote best configurations to next stage
