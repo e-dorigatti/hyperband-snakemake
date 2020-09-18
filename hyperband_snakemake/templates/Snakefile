@@ -51,7 +51,9 @@ rule find_overall_best:
 # -----------------------------------------------------------------------------------------------------------
 
 {% for config in range(stage.configs) %}
-rule run_bracket_{{ bracket.id }}_stage_{{ stage.id }}_config_{{ config}}:
+
+{# you can modify this rule to change how Snakemake runs the launch script #}
+rule run_bracket_{{ bracket.id }}_stage_{{ stage.id }}_config_{{ config }}:
     input:
          expand("{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{ config }}/config",
                 d=config['base_dir'])
@@ -59,9 +61,8 @@ rule run_bracket_{{ bracket.id }}_stage_{{ stage.id }}_config_{{ config}}:
          expand("{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{ config }}/result",
                 d=config['base_dir'])
     shell:
-         expand("bash {d}/run.sh '{d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{ config }}' {b}",
+         expand("bash {d}/run.sh {d}/bracket-{{ bracket.id }}/stage-{{ stage.id }}/config-{{ config }} {b}",
                 d=config['base_dir'], b={{ stage.budget }})[0]
-
 {% endfor %}
 
 {% if stage.promote_count > 0 %}

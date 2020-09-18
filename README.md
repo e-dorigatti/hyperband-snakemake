@@ -1,30 +1,27 @@
 Hyperband on Snakemake
 ===
 
-Do you have a medium-scale hyper-parameter search to run, and need a way to
-orchestrate this process? This is the solution. Based on Hyperband [1] and
-Snakemake [2], this tool will orchestrate the whole process for you. How is it
-different from the other implementations you can easily find elsewhere?
 
- 1. The exact configuration used for each hyper-parameter setting is safely
-    stored on disk.
- 2. All intermediate results are saved, too.
- 3. Thanks to Snakemake, training can be offloaded to a cluster manager such as
-    Slurm (see example below), enabling effortless and _massive_ parallel training.
- 4. Even though this tool is written in Python, you can launch training scripts
-    made with _any_ technology: they only need to read a configuration file and
-    write a file with a numerical result.
+Do you have a medium-to-large-scale hyper-parameter search to run, and need a
+way to orchestrate this process? This is the solution. Based on Hyperband [1]
+and Snakemake [2], this tool will orchestrate the whole process for you. How is
+it different from the other implementations you can easily find elsewhere?
 
-Saving everything on disk proves advantageous when your hyper-parameter search
-must run for weeks, as it allows you to check the progress, spot early mistakes,
-perform further iterations after the process ends (e.g., shoot for the very best
-configuration through Bayesian optimization, using the hyper-band results to
-bootstrap that model). Importantly, by decoupling training and search, you do
-not risk losing all your work because of some random bug that would crash the
-training process.
+ 1. **Easy to debug:** The exact configuration used for each hyper-parameter
+    setting is safely stored on disk. All intermediate results are saved, too.
+ 2. **Distributed:** Thanks to Snakemake, training can be offloaded to a cluster
+    manager such as [Slurm][slurm] (see example below), enabling effortless and
+    _massive_ parallel training.
+ 3. **Fail-Safe:** If the training process of a configuration fails, the result
+    of previously-run configurations are safely preserved on-disk, and
+    currently-running configurations allowed to terminate normally. After the
+    bug is fixed, the search can resume from where it was interrupted.
+ 4. **Language-agnostic:** You can launch training scripts made with _any_
+    technology: they only need to read a configuration file and write a file
+    with a numerical result.
 
-Note: to use this tool, you must adapt the included templates to your system.
-See section _Customization_ below for instructions.
+Note: to use this tool, you must adapt it to your system. See the section named
+_Customization_ for instructions.
 
 # Installation
 Can be installed via pip:
@@ -230,31 +227,37 @@ logs to determine whether a configuration is still running or has failed.
 
 # Customization
 In its present state, the generator script creates by default the logistic
-regression example just explained, but adapting it to your needs is easy. This
-script uses [Jinja2][jinja] to render three templates:
+regression example explained above, but adapting it to your needs is easy:
 
- 1. The [Snakefile][snake-tmpl], containing the logic to run the script and
-    promote good configurations to the next stage.
- 2. The [bash launch script][run-tmpl] that is invoked by the Snakefile and runs
-    the [sample training script][train-tmpl]. The training script should take as
-    arguments the configuration file and the budget, and write the result to a
-    file named `result` in the same directory as the configuration file (if you
-    are maximizing a metric, write its negation instead).
- 3. The [random configuration][config-tmpl] that is read by the training script.
-    Thanks to Jinja2, the actual generation of random parameters is contained in
-    the template file itself. There can be some custom logic, e.g. in the
+ 1. Write a training script, similar to the [provided example][train-tmpl], that
+    takes as command line arguments the path to a file with the hyper-parameters
+    and the allocated budget. It should write a numeric value to be minimized in
+    the search process to a file called `result` in the same directory as the
+    configuration.
+ 2. Customize the [random configuration template][config-tmpl] that is read by
+    the training script. Thanks to [Jinja2][jinja], the generation of random
+    hyper-parameters is contained in this template file and executed when you
+    run the generation command. It can contain some custom logic, e.g. in the
     provided example the type of regularization (L1 or L2) is chosen based on
     the solver (SAGA or LBFGS). You are of course not restricted to any
-    particular type of configuration, as long as it is text-based. For example,
-    you can directly produce a [Python configuration file][python-cfg] and
-    import it in the training script (if you are using Python, that is). This
-    would save you the effort of writing code to read the configuration and
-    instantiate the specified model.
+    particular file type, as long as it is text-based.
+ 3. Customize the [bash launch script][run-tmpl] that is invoked by the
+    Snakefile and launches the training script you wrote in point (1). This can
+    be used to provide further options to the training script, collect logs,
+    clean temporary outputs, submit the training script to a cluster manager,
+    and so on. If you feel this piece is redundant, you can call the training
+    script directly from the Snakefile.
+ 4. (Optional) Customize the [Snakefile][snake-tmpl], which contains the logic
+    to run the script you customized in point (3) and promote good
+    configurations to the next stage. You do not need to modify this template
+    unless you require additional functionality from Snakemake, in which case
+    you can modify the rule marked with a comment to suit your needs.
 
 These templates are rendered and saved in the output directory. This directory
 is now entirely portable, you just have to update `config['base_dir']` in the
-Snakefile. This variable should contain the path of the output dir, either
-absolute or relative to where you will run `snakemake`.
+Snakefile. This variable should contain the path of the root directory of the
+search configurations, either absolute or relative to where you will run
+`snakemake`.
 
 You can pass `--template-dir` to the generator to make it use your custom
 templates. Simply create a copy of the provided directory, modify to your needs,
@@ -287,8 +290,11 @@ Another option is to use `sbatch` combined with `--wait`, which has the
 advantage that you can use a heredoc:
 
 ```
-sbatch <options> --wait << EOF
+sbatch --wait << EOF
 #!/bin/bash
+
+#SBATCH <other options>
+
 conda activate <env>
 python train.py "$1/config" --output-dir "$1" --max-epochs "$2"
 EOF
