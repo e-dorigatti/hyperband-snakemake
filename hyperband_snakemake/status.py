@@ -45,12 +45,13 @@ def bracket_status(idx, path):
     print(f'    | Completed (C) | Failed (F) | In progress (R) | Pending (.) | Total |')
     print(f'    | {completed:>13d} | {failed:>10d} | {running:>15d} | {pending:>11d} | {len(config_status):>5d} |')
     print()
-    for i in range(0, len(config_status), 25):
-        print('     ', ' '.join([
-            ''.join([
+    for i in range(0, len(config_status), 50):
+        print(f' {i:>5d} ', '   '.join([
+            ' '.join([''.join([
                 ['.', 'R', 'C', 'F', '?'][config_status.get(k, -1)]
                 for k in range(j, min(j + 5, len(config_status)))
-            ]) for j in range(i, i + 25, 5)
+            ]) for j in range(l, l + 25, 5)])
+            for l in range(i, i + 50, 25)
         ]))
 
     results.sort(key=lambda x: x[1])
