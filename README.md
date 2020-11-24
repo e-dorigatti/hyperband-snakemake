@@ -58,7 +58,7 @@ hours) to perform one epoch on the dataset. These parameters translate to the
 following search structure:
 
 ```
-> python -m hyperband_snakemake generate 5 3 \
+> hyband generate 5 3 \
     --repetitions 2 --folds 10 \
     --guaranteed-budget 3 \
     --cost-one-epoch-full-dataset 0.0028 \
@@ -195,11 +195,12 @@ Since a Hyperband search can take many days, a simple utility to see the ongoing
 progress is provided:
 
 ```
-> python -m hyperband_snakemake status my-search
+> hyband status my-search
 Bracket 0 - Stages completed: 0
   Stage 0 - 81 configurations
     | Completed (C) | Failed (F) | In progress (R) | Pending (.) | Total |
-    |            12 |        4   |               8 |          57 |    81 |
+    |            12 |          4 |               8 |          57 |    81 |
+    |               |            |                 |             |       |
 
      0  ...F. ...C. .CC.. ..CC. ....R    ..C.. ..C.. ..... CRR.C C...C
     50  ..RR. .F... .R... RF... CF...    ...R. .
