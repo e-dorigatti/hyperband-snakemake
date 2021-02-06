@@ -330,6 +330,23 @@ job. It may be necessary to account for possible latencies when the results
 saved in a networked file-system.
 
 
+# Random Search
+This tool can also be used to run a simple random search without the full
+Hyperband machinery simply by restricting the search to the first stage of the
+first bracket:
+
+```
+$ hyband generate 4 3 --bracket 0 --last-stage 0
+Hyperband Search - η: 3 S: 4 R: 81 B: 405  (cost: 81.00)
+  Bracket 0 (cost: 81.00)
+    Stage 0 - 81 configurations each with budget 1.0 (cost: 81.00)
+```
+
+Note that the launch script `run.sh` will still get a budget of 1 which you
+should obviously ignore. As above, the root of the output folder will contain
+the best configuration at the end of the search.
+
+
 # References
 [1]: Li, L., Jamieson, K., DeSalvo, G., Rostamizadeh, A. and Talwalkar, A., 2017. _Hyperband: A novel bandit-based approach to hyperparameter optimization._ The Journal of Machine Learning Research, 18(1), pp.6765-6816. http://www.jmlr.org/papers/volume18/16-558/16-558.pdf
 

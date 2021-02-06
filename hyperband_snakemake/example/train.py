@@ -11,7 +11,7 @@ from sklearn.model_selection import StratifiedKFold
 @click.command()
 @click.argument('config-file', type=click.Path())
 @click.option('--budget', '-b', type=int)
-def main(config_file, budget):
+def main(config_file: str, budget: int) -> None:
     config_dir, _ = os.path.split(config_file)
     logging.basicConfig(
         level=logging.INFO,

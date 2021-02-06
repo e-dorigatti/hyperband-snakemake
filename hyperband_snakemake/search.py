@@ -6,13 +6,14 @@ class HbSearch:
     def __init__(
             self, smax: int, eta: int, unit_time: float, folds: Optional[int],
             repetitions: Optional[int], guaranteed_budget: int,
-            allowed_brackets: List[int]) -> None:
+            allowed_brackets: List[int], last_stage: Optional[int]) -> None:
         R = eta**smax
         B = R * (smax + 1)
 
         self.smax, self.eta, self.R, self.B = smax, eta, R, B
         self.unit_time, self.folds, self.repetitions = unit_time, folds, repetitions
         self.guaranteed_budget = guaranteed_budget
+        self.last_stage = last_stage
 
         self.brackets = [
             HbBracket(
@@ -20,6 +21,7 @@ class HbSearch:
                 s=s,
                 n=math.ceil(B * eta**s / (R * (s + 1))),
                 r=R / eta**s,
+                last_stage=last_stage,
                 search=self,
             )
             for s in range(smax, -1, -1)
@@ -38,8 +40,13 @@ class HbSearch:
 
 
 class HbBracket:
-    def __init__(self, eta: int, s: int, n: int, r: int, search: HbSearch):
+    def __init__(self, eta: int, s: int, n: int, r: int,
+                 last_stage: Optional[int], search: HbSearch):
         self.s, self.n, self.r, self.eta = s, n, r, eta
+
+        if last_stage is None:
+            last_stage = s
+
         self.search = search
         self.stages = [
             HbStage(
@@ -48,7 +55,7 @@ class HbBracket:
                 bracket=self,
                 search=search,
             )
-            for i in range(0, s + 1)
+            for i in range(0, last_stage + 1)
         ]
 
     def cost(self) -> float:
