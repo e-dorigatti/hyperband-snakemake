@@ -26,4 +26,3 @@ setuptools.setup(
     python_requires='>=3.6',
     entry_points={'console_scripts': ['hyband=hyperband_snakemake.cli:main']},
 )
-

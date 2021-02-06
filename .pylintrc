@@ -1,0 +1,24 @@
+[master]
+jobs=0
+fail-under=10.0
+ignore-patterns=^flycheck_.*\.py$,^\.#.*\.py$
+
+[typecheck]
+generated-members=torch.*
+
+[format]
+max-line-length=92
+
+[messages_control]
+disable=invalid-name,
+        missing-function-docstring,
+        missing-module-docstring,
+        missing-class-docstring,
+        attribute-defined-outside-init,
+        blacklisted-name,
+        no-else-return,
+        too-many-arguments,
+        too-many-locals,
+        too-many-instance-attributes,
+        not-callable,
+        too-few-public-methods,

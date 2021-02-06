@@ -1,15 +1,21 @@
 import os
+from typing import Optional, Union
 
-from jinja2 import Environment, FileSystemLoader, PackageLoader, ChoiceLoader
+from jinja2 import (BaseLoader, ChoiceLoader, Environment, FileSystemLoader,
+                    PackageLoader)
+
+from hyperband_snakemake.search import HbSearch, HbStage
 
 
 class HbWriter:
-    def __init__(self, config_template, run_template, snakefile_template, template_dir=None):
+    def __init__(self, config_template: str, run_template: str, snakefile_template: str,
+                 template_dir: Optional[str] = None):
         self._overwrite_warning = False
         self._config_template = config_template
         self._run_template = run_template
         self._snakefile_template = snakefile_template
 
+        loader: BaseLoader
         if template_dir is not None:
             loader = ChoiceLoader([
                 FileSystemLoader(template_dir),
@@ -20,7 +26,7 @@ class HbWriter:
 
         self._env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    def render_stage_config(self, index, search, stage):
+    def render_stage_config(self, index: int, search: HbSearch, stage: HbStage) -> str:
         tmpl = self._env.get_template(self._config_template)
         rendered = tmpl.render(
             folds=stage.search.folds,
@@ -30,7 +36,7 @@ class HbWriter:
         )
         return rendered
 
-    def render_snakefile(self, output_dir, search):
+    def render_snakefile(self, output_dir: str, search: HbSearch) -> str:
         brackets = [{
             'id': i,
             'max_stage': len(b.stages),
@@ -52,21 +58,28 @@ class HbWriter:
             brackets=brackets, base_dir=output_dir, search=search)
         return rendered
 
-    def render_run(self, search):
+    def render_run(self, search: HbSearch) -> str:
         tmpl = self._env.get_template(self._run_template)
         rendered = tmpl.render(search=search)
         return rendered
 
     @staticmethod
-    def _ensure_exists(*parts):
+    def _ensure_exists(*parts: str) -> str:
         dd = None
         for p in parts:
-            dd = os.path.join(dd, p) if dd is not None else p
+            if dd is not None:
+                dd = os.path.join(dd, p)
+            else:
+                dd = p
+
             if not os.path.exists(dd):
                 os.mkdir(dd)
+
+        assert dd is not None
         return dd
 
-    def _write_to_file(self, string, path, overwrite):
+    def _write_to_file(self, string: str, path: Union[str, tuple, list],
+                       overwrite: bool) -> None:
         if isinstance(path, (list, tuple)):
             path = os.path.join(self._ensure_exists(*path[:-1]), path[-1])
 
@@ -80,7 +93,8 @@ class HbWriter:
             with open(path, 'w') as f:
                 f.write(string)
 
-    def write_search(self, search, output_dir, overwrite=False):
+    def write_search(self, search: HbSearch, output_dir: str,
+                     overwrite: bool = False) -> None:
         self._ensure_exists(output_dir)
 
         self._write_to_file(

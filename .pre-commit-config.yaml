@@ -1,0 +1,31 @@
+repos:
+  - repo: local
+    hooks:
+      - id: isort
+        name: isort
+        stages: [commit]
+        language: system
+        entry: isort
+        types: [python]
+        exclude: (plots.py|process_data.py|jupyter_train.py)
+      - id: pylint
+        name: pylint
+        stages: [commit]
+        language: system
+        entry: pylint hyperband_snakemake
+        types: [python]
+        pass_filenames: false
+      - id: flake8
+        name: flake8
+        stages: [commit]
+        language: system
+        entry: flake8 hyperband_snakemake --config .flake8rc
+        types: [python]
+        pass_filenames: false
+      - id: mypy
+        name: mypy
+        stages: [commit]
+        language: system
+        entry: mypy hyperband_snakemake
+        types: [python]
+        pass_filenames: false

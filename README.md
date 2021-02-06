@@ -140,6 +140,24 @@ solver: saga
 penalty: l1
 ```
 
+That is generated from a [Jinja2][jinja] template that looks like this:
+
+```
+folds: {{ folds }}
+repetitions: {{ repetitions }}
+cv_seed: {{ range(1000000) | random }}
+learning_rate: {{ [1e-5, 1e-4, 1e-3, 1e-2, 1e-1] | random }}
+C: {{ [0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0] | random }}
+{% with solver = ['lbfgs', 'saga'] | random %}
+solver: {{ solver }}
+{% if solver == 'lbfgs' %}
+penalty: l2
+{% else %}
+penalty: l1
+{% endif %}
+{% endwith %}
+```
+
 The whole process can now be run via Snakemake:
 
 ```

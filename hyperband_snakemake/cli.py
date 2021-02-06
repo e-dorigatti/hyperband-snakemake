@@ -1,17 +1,19 @@
+from typing import Any
+
 import click
 
-from hyperband_snakemake.status import print_status
 from hyperband_snakemake.generator import run_generation
+from hyperband_snakemake.status import print_status
 
 
 @click.group()
-def main():
+def main() -> None:
     pass
 
 
 @main.command()
 @click.argument('search-dir', type=click.Path())
-def status(search_dir):
+def status(search_dir: str) -> None:
     '''
     Prints the status of an ongoing search.
     '''
@@ -27,7 +29,8 @@ def status(search_dir):
               help='Number of repetitions for cross-validation')
 @click.option('--folds', '-k', type=int, default=5,
               help='Number of folds for cross-validation')
-@click.option('--random-seed', type=int, help='Seed for the random generator')
+@click.option('--random-seed', type=int,
+              help='Seed for the random generator')
 @click.option('--guaranteed-budget', type=int, default=0,
               help='Minimum budget added to each configuration')
 @click.option('--output-dir', '-o', type=click.Path(),
@@ -43,8 +46,10 @@ def status(search_dir):
 @click.option('--snakefile-template', default='Snakefile',
               help='Path to the snakefile template (relative to the template dir.)')
 @click.option('--bracket', '-b', type=int, multiple=True,
-              help='Only perform this bracket (multiple allower).')
-def generate(*args, **kwargs):
+              help='Only perform this bracket (multiple allowed).')
+@click.option('--last-stage', type=int,
+              help='Stop the search at the given stage')
+def generate(*args: Any, **kwargs: Any) -> None:
     '''
     Uses the hyperband algorithm to generate a structured,
     randomized hyper-parameter search.

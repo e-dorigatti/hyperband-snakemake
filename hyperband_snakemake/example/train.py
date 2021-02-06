@@ -1,10 +1,11 @@
-import click
-import os
 import logging
+import os
+
+import click
 import yaml
+from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
-from sklearn.datasets import load_iris
 
 
 @click.command()
