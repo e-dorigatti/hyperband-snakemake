@@ -7,7 +7,6 @@ repos:
         language: system
         entry: isort
         types: [python]
-        exclude: (plots.py|process_data.py|jupyter_train.py)
       - id: pylint
         name: pylint
         stages: [commit]
