@@ -26,13 +26,15 @@ class HbWriter:
 
         self._env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    def render_stage_config(self, index: int, search: HbSearch, stage: HbStage) -> str:
+    def render_stage_config(self, bracket_index: int, config_index: int,
+                            search: HbSearch, stage: HbStage) -> str:
         tmpl = self._env.get_template(self._config_template)
         rendered = tmpl.render(
             folds=stage.search.folds,
             repetitions=stage.search.repetitions,
             search=search,
-            index=index,
+            bracket_index=bracket_index,
+            config_index=config_index,
         )
         return rendered
 
@@ -112,7 +114,7 @@ class HbWriter:
         for i, bracket in enumerate(search.brackets):
             for j in range(bracket.stages[0].n):
                 self._write_to_file(
-                    self.render_stage_config(j, search, bracket.stages[0]),
+                    self.render_stage_config(i, j, search, bracket.stages[0]),
                     [output_dir, f'bracket-{i}',
                         'stage-0', f'config-{j}', 'config'],
                     overwrite
