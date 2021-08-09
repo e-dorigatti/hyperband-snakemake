@@ -1,5 +1,6 @@
 import os
-from typing import Optional, Union
+import shutil
+from typing import List, Optional, Union
 
 from jinja2 import (BaseLoader, ChoiceLoader, Environment, FileSystemLoader,
                     PackageLoader)
@@ -14,11 +15,12 @@ class HbWriter:
         self._config_template = config_template
         self._run_template = run_template
         self._snakefile_template = snakefile_template
+        self._template_dir = template_dir
 
         loader: BaseLoader
-        if template_dir is not None:
+        if self._template_dir is not None:
             loader = ChoiceLoader([
-                FileSystemLoader(template_dir),
+                FileSystemLoader(self._template_dir),
                 PackageLoader('hyperband_snakemake', 'templates'),
             ])
         else:
@@ -95,9 +97,19 @@ class HbWriter:
             with open(path, 'w') as f:
                 f.write(string)
 
+    def _ignore_templates(self, path: str, files: List[str]) -> List[str]:
+        if path == self._template_dir:
+            templates = ['config', 'run.sh', 'Snakefile']
+            return [t for t in templates if t in files]
+        else:
+            return []
+
     def write_search(self, search: HbSearch, output_dir: str,
                      overwrite: bool = False) -> None:
-        self._ensure_exists(output_dir)
+
+        if self._template_dir is not None:
+            shutil.copytree(self._template_dir, output_dir, ignore=self._ignore_templates,
+                            dirs_exist_ok=True)
 
         self._write_to_file(
             self.render_run(search),
