@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='hyperband-snakemake',
-    version='0.0.4',
+    version='0.0.5',
     author='e-dorigatti',
     author_email='emilio.dorigatti@gmail.com',
     description='Orchestrate hyper-parameters search with snakemake',
