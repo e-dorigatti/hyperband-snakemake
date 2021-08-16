@@ -9,22 +9,25 @@ def promote_best(input, output, new_epochs):
     input is a list of paths pointing to the result files, while output
     is a list of paths pointing to the new configuration files
     '''
-    import os, shutil
+
+    import os, shutil, math
 
     scores = []
     for i, fname in enumerate(input):
         with open(fname) as f:
-              scores.append((fname, float(f.read())))
+            score = float(f.read())
+            if math.isfinite(score):
+                scores.append((fname, score))
+
+    if not scores:
+        raise RuntimeError('all configurations failed')
 
     scores.sort(key=lambda x: x[1])
 
     print('Promoted configuration and their scores')
-    for i in range(len(output)):
-        config, score = scores[i]
+    for (config, score), outconf in zip(scores, output):
         print('    %.4f - %s' % (score, config))
-        indir, _ = os.path.split(config)
-        shutil.copy(os.path.join(indir, 'config'), output[i])
-
+        shutil.copy(os.path.join(indir, 'config'), outconf)
 
 rule all:
     input:
