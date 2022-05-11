@@ -58,41 +58,28 @@ hours) to perform one epoch on the dataset. These parameters translate to the
 following search structure:
 
 ```
-> hyband generate 5 3 \
+> hyband generate 3 3 \
     --repetitions 2 --folds 10 \
     --guaranteed-budget 3 \
     --cost-one-epoch-full-dataset 0.0028 \
     --output-dir my-search \
     --random-seed 123456
 
-Hyperband Search (cost: 426.23)
-  Bracket 0 (cost: 73.48)
-    Stage 0 - 243 configurations each with budget 1.0 (cost: 12.25)
-    Stage 1 - 81 configurations each with budget 3.0 (cost: 12.25)
-    Stage 2 - 27 configurations each with budget 9.0 (cost: 12.25)
-    Stage 3 - 9 configurations each with budget 27.0 (cost: 12.25)
-    Stage 4 - 3 configurations each with budget 81.0 (cost: 12.25)
-    Stage 5 - 1 configurations each with budget 243.0 (cost: 12.25)
-  Bracket 1 (cost: 67.44)
-    Stage 0 - 98 configurations each with budget 3.0 (cost: 14.82)
-    Stage 1 - 32 configurations each with budget 9.0 (cost: 14.52)
-    Stage 2 - 10 configurations each with budget 27.0 (cost: 13.61)
-    Stage 3 - 3 configurations each with budget 81.0 (cost: 12.25)
-    Stage 4 - 1 configurations each with budget 243.0 (cost: 12.25)
-  Bracket 2 (cost: 64.86)
-    Stage 0 - 41 configurations each with budget 9.0 (cost: 18.60)
-    Stage 1 - 13 configurations each with budget 27.0 (cost: 17.69)
-    Stage 2 - 4 configurations each with budget 81.0 (cost: 16.33)
-    Stage 3 - 1 configurations each with budget 243.0 (cost: 12.25)
-  Bracket 3 (cost: 73.48)
-    Stage 0 - 18 configurations each with budget 27.0 (cost: 24.49)
-    Stage 1 - 6 configurations each with budget 81.0 (cost: 24.49)
-    Stage 2 - 2 configurations each with budget 243.0 (cost: 24.49)
-  Bracket 4 (cost: 73.48)
-    Stage 0 - 9 configurations each with budget 81.0 (cost: 36.74)
-    Stage 1 - 3 configurations each with budget 243.0 (cost: 36.74)
-  Bracket 5 (cost: 73.48)
-    Stage 0 - 6 configurations each with budget 243.0 (cost: 73.48)
+Hyperband Search - η: 3 S: 3 R: 27 B: 108  (cost: 21.32)
+  Bracket 0 (cost: 5.44)
+    Stage 0 - 27 configurations each with budget 1.0 (cost: 1.36)
+    Stage 1 - 9 configurations each with budget 3.0 (cost: 1.36)
+    Stage 2 - 3 configurations each with budget 9.0 (cost: 1.36)
+    Stage 3 - 1 configurations each with budget 27.0 (cost: 1.36)
+  Bracket 1 (cost: 4.99)
+    Stage 0 - 12 configurations each with budget 3.0 (cost: 1.81)
+    Stage 1 - 4 configurations each with budget 9.0 (cost: 1.81)
+    Stage 2 - 1 configurations each with budget 27.0 (cost: 1.36)
+  Bracket 2 (cost: 5.44)
+    Stage 0 - 6 configurations each with budget 9.0 (cost: 2.72)
+    Stage 1 - 2 configurations each with budget 27.0 (cost: 2.72)
+  Bracket 3 (cost: 5.44)
+    Stage 0 - 4 configurations each with budget 27.0 (cost: 5.44)
 ```
 
 Where each stage uses the best configurations in the previous stage of the same

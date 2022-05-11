@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union, Set
 
 from jinja2 import (BaseLoader, ChoiceLoader, Environment, FileSystemLoader,
                     PackageLoader)
@@ -104,8 +104,37 @@ class HbWriter:
         else:
             return []
 
+    def _generate_all_configs(self, search: HbSearch) -> List[Tuple[List[str], str]]:
+        path_and_config: List[Tuple[List[str], str]] = []
+        generated_configs: Set[str] = set()
+
+        for i, bracket in enumerate(search.brackets):
+            for j in range(bracket.stages[0].n):
+                # generate unique configuration
+                tried, cfg = 0, ''
+                while tried == 0 or cfg in generated_configs:
+                    cfg = self.render_stage_config(i, j, search, bracket.stages[0])
+                    tried += 1
+                    if tried >= 27:
+                        # number of failures generating a unique random config is
+                        # distributed as a Geometric random variable. there is a
+                        # ~50% chance of observing more than 27 failures when we
+                        # generated 97.5% of all possible configs
+                        raise RuntimeError('too many attempts generating unique random '
+                                           f'configuration ({len(generated_configs)} so '
+                                           'far)! - either use fewer random '
+                                           'hyperparameters or increase the size of the '
+                                           'search')
+                generated_configs.add(cfg)
+                path_and_config.append(([f'bracket-{i}', 'stage-0', f'config-{j}', 'config'], cfg))
+        return path_and_config
+
     def write_search(self, search: HbSearch, output_dir: str,
                      overwrite: bool = False) -> None:
+
+        path_and_config = self._generate_all_configs(search)
+        for path, config in path_and_config:
+            self._write_to_file(config, [output_dir] + path, overwrite)
 
         if self._template_dir is not None:
             shutil.copytree(self._template_dir, output_dir, ignore=self._ignore_templates,
@@ -122,12 +151,3 @@ class HbWriter:
             os.path.join(output_dir, 'Snakefile'),
             overwrite
         )
-
-        for i, bracket in enumerate(search.brackets):
-            for j in range(bracket.stages[0].n):
-                self._write_to_file(
-                    self.render_stage_config(i, j, search, bracket.stages[0]),
-                    [output_dir, f'bracket-{i}',
-                        'stage-0', f'config-{j}', 'config'],
-                    overwrite
-                )
