@@ -316,7 +316,6 @@ Snakemake to wait for the result files for up to 60 seconds before failing the
 job. It may be necessary to account for possible latencies when the results
 saved in a networked file-system.
 
-
 # Random Search
 This tool can also be used to run a simple random search without the full
 Hyperband machinery simply by restricting the search to the first stage of the
@@ -332,6 +331,48 @@ Hyperband Search - η: 3 S: 4 R: 81 B: 405  (cost: 81.00)
 Note that the launch script `run.sh` will still get a budget of 1 which you
 should obviously ignore. As above, the root of the output folder will contain
 the best configuration at the end of the search.
+
+# Cross-validation
+It is possible to modify the launch script template to use cross-validation or bootstrap resampling to evaluate a single hyperparameter configuration.
+In this case, the launch script would run multiple trainings with the same config and aggregate the results into an overall average score that will be used to rank the hyperparameters.
+The advantage of doing this in the launch script rather than in the training script is that these training runs can be run in parallel.
+
+In the specific case of SLURM, one can leverage job arrays to run cross-validation (for example), using the environment variable `SLURM_ARRAY_TASK_ID` to find which fold the script is supposed to use for validation:
+
+```
+#!/bin/bash
+set -x
+
+echo "Called with base directory $1 and budget $2"
+
+# separate log files for each job in the array
+sbatch ... -o "$1/log%a.out" -e "$1/log%a.err" --wait --array 0-4 << EOF
+#!/bin/bash
+source ~/.bashrc
+conda activate env
+
+# run a single fold of 5-fold cross-validation
+# the validation score of fold k will be saved in the file result-k
+python train.py $1/config --epochs $2 \
+    --this-cv-fold $LURM_ARRAY_TASK_ID --total-cv-folds 5 \
+    > $1/result-$LURM_ARRAY_TASK_ID
+EOF
+
+# sbatch will wait until all jobs in the array finished running
+
+if [[ $? -ne 0 ]]; then
+  # there was an error in at least one of the jobs, abort with same error code
+  exit $?
+fi
+
+# read all the result files, compute the average, and save in the result file
+find $1 -name "result-*" | xargs awk \
+  '/nan/{found_nan=1} {n=n+$0; c=c+1} END {if(found_nan) { print "nan" } else {print n/c}}' \
+  > $1/result
+```
+
+
+
 
 
 # References
