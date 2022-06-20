@@ -355,7 +355,7 @@ conda activate env
 # the validation score of fold k will be saved in the file result-k
 python train.py $1/config --epochs $2 \
     --this-cv-fold $LURM_ARRAY_TASK_ID --total-cv-folds 5 \
-    > $1/result-$LURM_ARRAY_TASK_ID
+    --output-file $1/result-$LURM_ARRAY_TASK_ID
 EOF
 
 # sbatch will wait until all jobs in the array finished running
