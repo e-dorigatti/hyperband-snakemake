@@ -354,7 +354,8 @@ conda activate env
 # run a single fold of 5-fold cross-validation
 # the validation score of fold k will be saved in the file result-k
 python train.py $1/config --epochs $2 \
-    --this-cv-fold $LURM_ARRAY_TASK_ID --total-cv-folds 5 \
+    --this-cv-fold $LURM_ARRAY_TASK_ID \
+    --total-cv-folds $SLURM_ARRAY_TASK_COUNT \
     --output-file $1/result-$LURM_ARRAY_TASK_ID
 EOF
 
