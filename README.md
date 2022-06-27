@@ -361,9 +361,11 @@ EOF
 
 # sbatch will wait until all jobs in the array finished running
 
-if [[ $? -ne 0 ]]; then
+EC=$?
+if [[ $EC -ne 0 ]]; then
   # there was an error in at least one of the jobs, abort with same error code
-  exit $?
+  # possibly do some clean-up
+  exit $EC
 fi
 
 # read all the result files, compute the average, and save in the result file
