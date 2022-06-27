@@ -337,7 +337,7 @@ It is possible to modify the launch script template to use cross-validation or b
 In this case, the launch script would run multiple trainings with the same config and aggregate the results into an overall average score that will be used to rank the hyperparameters.
 The advantage of doing this in the launch script rather than in the training script is that these training runs can be run in parallel.
 
-In the specific case of SLURM, one can leverage job arrays to run cross-validation (for example), using the environment variable `SLURM_ARRAY_TASK_ID` to find which fold the script is supposed to use for validation:
+In the specific case of SLURM, one can leverage job arrays to run cross-validation (for example), using the environment variable `SLURM_ARRAY_TASK_ID` in the heredoc to find which fold the script is supposed to use for validation:
 
 ```
 #!/bin/bash
@@ -354,9 +354,9 @@ conda activate env
 # run a single fold of 5-fold cross-validation
 # the validation score of fold k will be saved in the file result-k
 python train.py $1/config --epochs $2 \
-    --this-cv-fold $LURM_ARRAY_TASK_ID \
-    --total-cv-folds $SLURM_ARRAY_TASK_COUNT \
-    --output-file $1/result-$LURM_ARRAY_TASK_ID
+    --this-cv-fold \$LURM_ARRAY_TASK_ID \
+    --total-cv-folds \$SLURM_ARRAY_TASK_COUNT \
+    --output-file $1/result-\$LURM_ARRAY_TASK_ID
 EOF
 
 # sbatch will wait until all jobs in the array finished running
